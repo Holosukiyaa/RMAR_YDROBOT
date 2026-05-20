@@ -1,0 +1,10 @@
+{
+  "store_name": "测试商品",
+  "store_info": "这是通过模板自动添加的商品",
+  "price": 9.9,
+  "cate_id": [42],
+  "unit_name": "件",
+  "is_show": 1,
+  "address": [1, 35, 408],
+  "image": "test.png"
+}

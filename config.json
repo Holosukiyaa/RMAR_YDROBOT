@@ -1,0 +1,17 @@
+{
+  "token": "请在此处填入你的Bearer Token",
+  "api": {
+    "base_url": "https://ed.weeeg.com/adminapi",
+    "referer": "https://ed.weeeg.com/ekadmin/product/add_product"
+  },
+  "default": {
+    "cate_id": [42],
+    "address": [1, 35, 408],
+    "logistics": ["1"],
+    "freight": 1,
+    "postage": 0,
+    "nick": ["ayekalooter"],
+    "unit_name": "件",
+    "is_show": 1
+  }
+}
