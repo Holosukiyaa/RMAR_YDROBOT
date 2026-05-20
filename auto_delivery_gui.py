@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QTextEdit, QComboBox, QMessageBox, QProgressBar)
 from PyQt5.QtCore import QThread, pyqtSignal
 
-# 判断是否为打包后的exe
 if getattr(sys, 'frozen', False):
     BASE_DIR = os.path.dirname(sys.executable)
 else:
@@ -36,7 +35,6 @@ class Worker(QThread):
             self.progress_signal.emit(10)
             self.log_signal.emit("=== 开始发布商品 ===\n")
             
-            # 上传图片
             self.log_signal.emit("正在上传图片...")
             image_file = self.template_config.get("image", "")
             image_url = ""
@@ -51,14 +49,12 @@ class Worker(QThread):
             
             self.progress_signal.emit(50)
             
-            # 构建商品数据
             default_config = self.config.get("default", {})
             product = default_config.copy()
             product.update(self.template_config)
             product["image"] = image_url
             product["slider_image"] = [image_url] if image_url else []
             
-            # 添加商品
             self.log_signal.emit("正在发布商品...")
             result = self.add_product(product)
             
@@ -139,7 +135,6 @@ class MainWindow(QMainWindow):
         layout.setSpacing(10)
         layout.setContentsMargins(20, 20, 20, 20)
         
-        # Token 输入
         token_layout = QHBoxLayout()
         token_layout.addWidget(QLabel("Token:"))
         self.token_input = QLineEdit()
@@ -152,7 +147,6 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(token_layout)
         
-        # 模板选择
         template_layout = QHBoxLayout()
         template_layout.addWidget(QLabel("选择模板:"))
         self.template_combo = QComboBox()
@@ -166,7 +160,6 @@ class MainWindow(QMainWindow):
         template_layout.addStretch()
         layout.addLayout(template_layout)
         
-        # 发布按钮
         self.publish_btn = QPushButton("开始发布")
         self.publish_btn.setMinimumHeight(40)
         self.publish_btn.setStyleSheet("""
@@ -187,13 +180,11 @@ class MainWindow(QMainWindow):
         self.publish_btn.clicked.connect(self.start_publish)
         layout.addWidget(self.publish_btn)
         
-        # 进度条
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         self.progress_bar.setVisible(False)
         layout.addWidget(self.progress_bar)
         
-        # 日志输出
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
         self.log_output.setStyleSheet("""
@@ -209,6 +200,7 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(layout)
 
     def load_config(self):
+        """加载配置文件"""
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
@@ -221,6 +213,7 @@ class MainWindow(QMainWindow):
         self.load_templates()
 
     def save_token(self):
+        """保存Token到配置文件"""
         token = self.token_input.text().strip()
         if not token:
             QMessageBox.warning(self, "警告", "请输入Token")
@@ -253,11 +246,12 @@ class MainWindow(QMainWindow):
         self.log("Token已保存到 config.json")
 
     def load_templates(self):
+        """加载模板列表"""
         self.template_combo.clear()
         
         templates_dir = os.path.join(BASE_DIR, "templates")
         if not os.path.exists(templates_dir):
-            self.log("templates 文件夹不存在")
+            self.log("templates 文件夹不存在，请先运行一次生成配置")
             return
         
         templates = [d for d in os.listdir(templates_dir) 
@@ -270,6 +264,7 @@ class MainWindow(QMainWindow):
             self.log("没有找到模板")
 
     def start_publish(self):
+        """开始发布"""
         token = self.token_input.text().strip()
         if not token or token == "请在此处填入你的Bearer Token":
             QMessageBox.warning(self, "警告", "请先配置Token")
@@ -306,6 +301,7 @@ class MainWindow(QMainWindow):
         self.worker.start()
 
     def publish_finished(self, success, message):
+        """发布完成"""
         self.publish_btn.setEnabled(True)
         self.progress_bar.setVisible(False)
         
@@ -315,6 +311,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "失败", message)
 
     def log(self, message):
+        """输出日志"""
         self.log_output.append(message)
 
 
